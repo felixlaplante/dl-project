@@ -8,13 +8,15 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 #####################
 # Import libraries
 
+from tqdm import tqdm
+
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
 import torch
 from torch.utils.data import DataLoader
-import pandas as pd
 import torch.optim as optim
-from tqdm import tqdm
-import matplotlib.pyplot as plt
 
 #####################
 # Import custom functions
