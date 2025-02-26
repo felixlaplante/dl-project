@@ -32,15 +32,15 @@ torch.manual_seed(42)
 #####################
 # Load data
 
-train_df = pd.read_csv('train.csv')
+train_df = pd.read_csv('data/train.csv')
 train_df['date'] = pd.to_datetime(train_df['date'], utc=True)
 train_df.set_index('date', inplace=True)
 
-weather_df = pd.read_parquet('meteo.parquet')
+weather_df = pd.read_parquet('data/meteo.parquet')
 weather_df['date'] = pd.to_datetime(weather_df['date'], utc=True)
 weather_df.set_index('date', inplace=True)
 
-co_emissions_df = pd.read_csv('annual-co-emissions.csv')
+co_emissions_df = pd.read_csv('data/annual-co-emissions.csv')
 co_emissions_df['Year'] = pd.to_datetime(co_emissions_df['Year'].astype(str) + '-07-01', utc=True)
 co_emissions_df.set_index('Year', inplace=True)
 
