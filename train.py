@@ -97,4 +97,4 @@ plt.show()
 #####################
 # Save model
 
-torch.save(model.state_dict(), 'model.pth')
+torch.save(model.state_dict(), 'model/model.pth')
