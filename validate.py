@@ -8,7 +8,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 #####################
 # Import libraries
 
-import joblib
+import scipy.stats as stats
 from tqdm import tqdm
 
 import numpy as np
@@ -163,3 +163,36 @@ fig.update_layout(title='Predictions on the first week of the validation set',
                   yaxis_title='Load',
                   )
 fig.write_image('val_visualization/predictions_wk.png', scale=2)
+
+#####################
+# Histogram of errors
+
+errors = val_y_df['France'].values - predictions_df['pred_France'].values
+fig = go.Figure()
+fig.add_trace(go.Histogram(x=errors, nbinsx=100, histnorm='percent', name='Errors'))
+fig.update_layout(title='Histogram of errors',
+                  xaxis_title='Error',
+                  yaxis_title='Percentage',
+                  )
+fig.write_image('val_visualization/errors.png', scale=2)
+
+#####################
+# q-q plot of standarduzed errors
+
+standardized_errors = (errors - np.mean(errors)) / np.std(errors)
+    
+theoretical_quantiles = stats.norm.ppf(np.linspace(0.01, 0.99, 100))
+sample_quantiles = np.quantile(standardized_errors, np.linspace(0.01, 0.99, 100)) 
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=theoretical_quantiles, y=sample_quantiles, mode='markers', name='Quantiles'))
+min_val = min(min(theoretical_quantiles), min(sample_quantiles))
+max_val = max(max(theoretical_quantiles), max(sample_quantiles))
+fig.add_trace(go.Scatter(x=[min_val, max_val], y=[min_val, max_val], mode='lines', line=dict(dash='dash'), name='y=x'))
+
+fig.update_layout(
+    title='QQ Plot of standardized residuals',
+    xaxis_title='Theoretical quantiles',
+    yaxis_title='Sample quantiles',
+)
+fig.write_image('val_visualization/qq_plot.png', scale=2)
