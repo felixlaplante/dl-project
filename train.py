@@ -8,6 +8,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 #####################
 # Import libraries
 
+import joblib
 from tqdm import tqdm
 
 import numpy as np
@@ -61,29 +62,27 @@ y_df = train_df
 X = X_df.values.astype('float32')
 y = y_df.values.astype('float32')
 
-X_full_scaler, y_full_scaler = get_scalers(X, y)
+X_scaler, y_scaler = get_scalers(X, y)
 
-train_full_X, train_full_y = X_full_scaler.transform(X), y_full_scaler.transform(y)
+train_X, train_y = X_scaler.transform(X), y_scaler.transform(y)
 
-train_full_dataset = Load_Xy(*load_seq(train_full_X, train_full_y))
-train_full_loader = DataLoader(train_full_dataset, batch_size=256, shuffle=True)
+train_full_dataset = Load_Xy(*load_seq(train_X, train_y))
+train_full_loader = DataLoader(train_full_dataset, batch_size=config.batch_size, shuffle=True)
 
 #####################
 # Train model
 
-loss_fn = RMSELoss(torch.FloatTensor(y_full_scaler.scale_).to(config.device))
+loss_fn = RMSELoss(torch.FloatTensor(y_scaler.scale_).to(config.device))
 
-lr = 1e-3
 input_dim = X.shape[1]
 output_dim = y.shape[1]
-epochs = 40
 
-model = LSTM(input_dim, output_dim, 256, 2).to(config.device)
+model = LSTM(input_dim, output_dim, config.hidden_size, config.num_layers).to(config.device)
 
-optimizer = optim.AdamW(model.parameters(), lr=lr)
+optimizer = optim.AdamW(model.parameters(), lr=config.lr)
 
-train_losses, val_losses = [], []
-for epoch in tqdm(range(epochs), desc="Training"):
+train_losses = []
+for epoch in tqdm(range(config.epochs), desc="Training"):
     t_loss = train_loop(train_full_loader, model, loss_fn, optimizer)
     train_losses.append(t_loss)
 
@@ -96,5 +95,8 @@ plt.show()
 
 #####################
 # Save model
+
+joblib.dump(X_scaler, 'scalers/X_scaler.pkl')
+joblib.dump(y_scaler, 'scalers/y_scaler.pkl')
 
 torch.save(model.state_dict(), 'model/model.pth')

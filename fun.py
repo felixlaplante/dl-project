@@ -93,7 +93,7 @@ def validate(dataloader, model, loss_fn):
 
 def predict(model, data):
     X, _ = load_seq(data, None)
-    dataloader = DataLoader(Load_X(X), batch_size=256, shuffle=False)
+    dataloader = DataLoader(Load_X(X), batch_size=config.batch_size, shuffle=False)
     
     model.eval()
     pred = []
