@@ -1,6 +1,6 @@
 # Quick overview
 
-This repo contains the code to reproduce the results presented in the project, as well as the leaderboard submission. 
+This repository contains the code that was used for our project. The results in our report can be reproduced using this code. Our goal was to predict french electrical load over the course of a year (2022) using Deep Learning.  
 
 # Organization
 
